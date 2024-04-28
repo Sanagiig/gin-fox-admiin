@@ -5,5 +5,5 @@ type CaptchaRes struct {
 	Base64Str   string `json:"base64Str"`
 	CaptchaLen  int    `json:"captchaLen"`
 	OpenCaptcha bool   `json:"openCaptcha"`
-	CaptchaCode string `json:"-"`
+	CaptchaCode string `json:"captchaCode"`
 }

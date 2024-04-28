@@ -1,7 +1,6 @@
 package system
 
 import (
-	"gin-one/global"
 	"gin-one/message"
 	comReq "gin-one/model/common/request"
 	"gin-one/model/common/response"
@@ -20,23 +19,32 @@ type UserApi struct{}
 func (u *UserApi) Register(c *gin.Context) {
 	var data request.Register
 	var userModel system.SysUser
+	var err error
+	ip := c.ClientIP()
 
-	if !ctx.MustBindWithCtx(c, &data) {
+	if !ctx.MustBindWithCopy(c, &data, &userModel) {
 		return
 	}
 
-	codeMsg, err := userService.CreateUser(&userModel)
+	msgCode, ok, err := baseService.CheckCaptchaCode(ip, data.CaptchaID, data.CaptchaCode)
 	if err != nil {
-		errMsg := err.Error()
-		if global.Msg.IsMsg(codeMsg, errMsg) {
-			response.FailWithMessage(message.USER_IS_EXIST, "", c)
-		} else {
-			response.FailWithMessage(message.OPER_DB_ERR, errMsg, c)
-		}
+		response.FailWithMessage(message.CAPTCHA_ERR, err.Error(), c)
+		return
+	} else if !ok {
+		response.FailWithMessage(msgCode, "", c)
 		return
 	}
 
-	response.OkWithDetailed(userModel, codeMsg, c)
+	msgCode, err = userService.CreateUser(&userModel)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
+		return
+	} else if msgCode != message.OPER_OK {
+		response.FailWithMessage(msgCode, "", c)
+		return
+	}
+
+	response.OkWithDetailed(userModel, msgCode, c)
 }
 
 func (u *UserApi) Login(c *gin.Context) {

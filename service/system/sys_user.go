@@ -17,7 +17,7 @@ type UserService struct{}
 
 func (service *UserService) Login(login request.Login) (code int, user system.SysUser, err error) {
 	user.Username = login.Username
-	err = global.DB.Model(&user).Preload("Roles").First(&user).Error
+	err = global.DB.Preload("Roles").Where("username = ?", login.Username).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return message.USERNAME_OR_PASS_FAILED, user, err
@@ -39,7 +39,7 @@ func (service *UserService) CreateUser(u *system.SysUser) (msgCode int, err erro
 	if err != nil {
 		return message.OPER_DB_ERR, err
 	} else if isExist {
-		return message.OPER_FAILED, errors.New(global.Msg.Msg(message.USER_IS_EXIST))
+		return message.USER_IS_EXIST, err
 	}
 
 	if u.Roles == nil {

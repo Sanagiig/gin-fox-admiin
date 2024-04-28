@@ -11,7 +11,6 @@ type ApiGroup struct {
 	SysBaseApi   SysBaseApi
 	SystemApi    SystemApi
 	FTPApi       FTPApi
-	InitDBApi    InitDBApi
 }
 
 var (

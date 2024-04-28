@@ -6,9 +6,9 @@ import (
 
 type SysUser struct {
 	common.UUIDModel
-	Username    string    `json:"userName" gorm:"index;comment:用户登录名"`                                                  // 用户登录名
+	Username    string    `json:"username" gorm:"index;comment:用户登录名"`                                                  // 用户登录名
 	Password    string    `json:"-"  gorm:"comment:用户登录密码"`                                                             // 用户登录密码
-	NickName    string    `json:"nickName" gorm:"default:系统用户;comment:用户昵称"`                                            // 用户昵称
+	NickName    string    `json:"nickname" gorm:"default:系统用户;comment:用户昵称"`                                            // 用户昵称
 	SideMode    string    `json:"sideMode" gorm:"default:dark;comment:用户侧边主题"`                                          // 用户侧边主题
 	HeaderImg   string    `json:"headerImg" gorm:"default:https://qmplusimg.henrongyi.top/gva_header.jpg;comment:用户头像"` // 用户头像
 	BaseColor   string    `json:"baseColor" gorm:"default:#fff;comment:基础颜色"`                                           // 基础颜色

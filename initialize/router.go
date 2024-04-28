@@ -1,12 +1,16 @@
 package initialize
 
 import (
+	"gin-one/middlewares"
 	"gin-one/router"
 	"github.com/gin-gonic/gin"
 )
 
 func Routers() *gin.Engine {
 	Router := gin.New()
+	Router.Use(gin.Recovery())
+	Router.Use(middlewares.Cors())
+
 	pubRouter := Router.Group("")
 	privateRouter := Router.Group("")
 
