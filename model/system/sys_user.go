@@ -16,7 +16,9 @@ type SysUser struct {
 	Roles       []SysRole `json:"roles" gorm:"many2many:sys_user_role;joinForeignKey:user_id;joinReferences:role_id"`
 	Phone       string    `json:"phone"  gorm:"comment:用户手机号"`                     // 用户手机号
 	Email       string    `json:"email"  gorm:"comment:用户邮箱"`                      // 用户邮箱
+	Description string    `json:"description"  gorm:"comment:描述"`                  // 用户邮箱
 	Enable      int       `json:"enable" gorm:"default:1;comment:用户是否被冻结 1正常 2冻结"` //用户是否被冻结 1正常 2冻结
+	HomePath    string    `json:"homePath" gorm:"default:/dashboard/analysis"`
 }
 
 func (SysUser) TableName() string {
