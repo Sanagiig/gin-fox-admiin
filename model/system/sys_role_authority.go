@@ -3,7 +3,7 @@ package system
 import "gin-one/model/common"
 
 type SysRoleAuthority struct {
-	common.CommonModel
+	common.UuidDateModel
 	RoleID      string       `gorm:"role_id;type:varchar(36);"`
 	AuthorityID string       `gorm:"authority_id;type:varchar(36);"`
 	Role        SysRole      `gorm:"foreignKey:RoleID;"`

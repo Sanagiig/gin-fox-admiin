@@ -20,12 +20,13 @@ func (api *AuthorityApi) CreateAuthority(c *gin.Context) {
 		return
 	}
 
-	if err := authorityService.CreateAuthority(&authorityModel); err != nil {
-		response.FailWithMessage(message.OPER_DB_ERR, err.Error(), c)
+	msgCode, err := authorityService.CreateAuthority(&authorityModel)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
 		return
 	}
 
-	response.OkWithDetailed(authorityModel, message.OPER_OK, c)
+	response.OkWithDetailed(authorityModel, msgCode, c)
 }
 
 func (api *AuthorityApi) UpdateAuthority(c *gin.Context) {
@@ -116,4 +117,39 @@ func (api *AuthorityApi) GetAuthorityPagination(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(response.WrapPageData(data.PageInfo, count, authorities), msgCode, c)
+}
+
+func (api *AuthorityApi) GetAuthorityChildren(c *gin.Context) {
+	var data request.GetAuthorityTreeReq
+	var authorityModel system.SysAuthority
+
+	if !ctx.MustBindWithCopy(c, &data, &authorityModel) {
+		response.FailWithMessage(message.DATA_STRUCT_ERR, "", c)
+		return
+	}
+
+	parentIds := []string{data.ParentID}
+	msgCode, auths, err := authorityService.GetAuthorityChildrenByParentIds(parentIds, &authorityModel)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(auths, msgCode, c)
+}
+
+func (api *AuthorityApi) GetAuthorityTree(c *gin.Context) {
+	var data request.GetAuthorityTreeReq
+	var authorityModel system.SysAuthority
+
+	if !ctx.MustBindWithCopy(c, &data, &authorityModel) {
+		return
+	}
+
+	msgCode, authorities, err := authorityService.GetAuthorityTree(&authorityModel, nil)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
+		return
+	}
+	response.OkWithDetailed(authorities, msgCode, c)
 }

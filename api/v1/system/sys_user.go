@@ -155,6 +155,9 @@ func (u *UserApi) DeleteUserList(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage(message.OPER_ERR, err.Error(), c)
 		return
+	} else if code != message.OPER_OK {
+		response.FailWithMessage(code, "", c)
+		return
 	}
 	response.OkWithMessage(code, c)
 }
@@ -202,7 +205,7 @@ func (u *UserApi) GetUserPagination(c *gin.Context) {
 
 	msgCode, users, count, err := userService.GetUserPagination(data.PageInfo, &userModel, data.RoleIds)
 	if err != nil {
-		response.FailWithPage(response.WrapPageData(data.PageInfo, count, users), msgCode, err.Error(), c)
+		response.FailWithPage(data.PageInfo, msgCode, err.Error(), c)
 		return
 	}
 	response.OkWithDetailed(response.WrapPageData(data.PageInfo, count, users), msgCode, c)

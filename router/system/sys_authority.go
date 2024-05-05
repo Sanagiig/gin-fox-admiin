@@ -18,6 +18,8 @@ func (r *AuthorityRouter) InitAuthorityRouter(pubEngine *gin.RouterGroup, priEng
 		pub.DELETE("/deleteAuthorityList", authorityApi.DeleteAuthorityList)
 		pub.GET("/getAuthorityById", authorityApi.GetAuthorityByID)
 		pub.GET("/getAuthorityPagination", authorityApi.GetAuthorityPagination)
+		pub.GET("/getAuthorityTree", authorityApi.GetAuthorityTree)
+		pub.GET("/getAuthorityChildren", authorityApi.GetAuthorityChildren)
 	}
 
 	pri := pubEngine.Group("authority")

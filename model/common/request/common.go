@@ -14,3 +14,11 @@ type GetById struct {
 type GetByIds struct {
 	Ids []string `json:"ids" form:"ids"`
 }
+
+type GetByParentIds struct {
+	ParentIds []string `json:"parentIds" form:"parentIds"`
+}
+
+type GetByCode struct {
+	Code string `json:"code" form:"code"`
+}

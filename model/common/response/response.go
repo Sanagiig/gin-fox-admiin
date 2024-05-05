@@ -6,6 +6,7 @@ import (
 	"gin-one/model/common/request"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"reflect"
 )
 
 const (
@@ -60,11 +61,18 @@ func OkWithData(data interface{}, c *gin.Context) {
 }
 
 func OkWithDetailed(data interface{}, msgCode int, c *gin.Context) {
-	Result(SUCCESS, data, global.Msg.Msg(msgCode), "", c)
-}
+	val := reflect.ValueOf(data)
+	if val.Kind() == reflect.Slice {
+		if val.Len() == 0 && val.IsNil() {
+			data = make(map[string]interface{}, 0)
+		}
+	}
 
-func OkWithPage(data PageResponse, msgCode int, c *gin.Context) {
-	PageWitheResult(SUCCESS, data, global.Msg.Msg(msgCode), "", c)
+	code := SUCCESS
+	if !global.Msg.IsOkCode(msgCode) {
+		code = ERROR
+	}
+	Result(code, data, global.Msg.Msg(msgCode), "", c)
 }
 
 func Fail(c *gin.Context) {
@@ -79,11 +87,20 @@ func FailWithDetailed(data interface{}, msgCode int, errMsg string, c *gin.Conte
 	Result(ERROR, data, global.Msg.Msg(msgCode), errMsg, c)
 }
 
-func FailWithPage(data PageResponse, msgCode int, errMsg string, c *gin.Context) {
-	PageWitheResult(ERROR, data, global.Msg.Msg(msgCode), errMsg, c)
+func FailWithPage(pageInfo request.PageInfo, msgCode int, errMsg string, c *gin.Context) {
+	PageWitheResult(ERROR, PageResponse{
+		pageInfo.Page,
+		pageInfo.PageSize,
+		0,
+		make([]interface{}, 0),
+	}, global.Msg.Msg(msgCode), errMsg, c)
 }
 
 func WrapPageData(pageInfo request.PageInfo, count int64, data interface{}) PageResponse {
+	val := reflect.ValueOf(data)
+	if val.IsNil() {
+		data = make([]interface{}, 0)
+	}
 	return PageResponse{
 		pageInfo.Page,
 		pageInfo.PageSize,

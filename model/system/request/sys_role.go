@@ -1,9 +1,14 @@
 package request
 
-import "gin-one/model/common/request"
+import (
+	"gin-one/model/common"
+	"gin-one/model/common/request"
+)
 
 type CreateRoleReq struct {
-	RoleName    string   `json:"authorityName" binding:"required"`
+	common.StatusModel
+	RoleName    string   `json:"roleName" binding:"required"`
+	RoleCode    string   `json:"roleCode"  binding:"required"`
 	Description string   `json:"description" binding:"required"`
 	Authorities []string `json:"authorities"`
 }
@@ -11,6 +16,11 @@ type CreateRoleReq struct {
 type UpdateRoleReq struct {
 	ID string `json:"id" binding:"required"`
 	CreateRoleReq
+}
+
+type AuthorityInfo struct {
+	common.UUIDModel
+	AuthorityType string `json:"authorityType" binding:"required"`
 }
 
 type GetRoleReq struct {

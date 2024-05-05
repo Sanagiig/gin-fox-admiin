@@ -4,6 +4,7 @@ type RouterGroup struct {
 	UserRouter
 	RoleRouter
 	AuthorityRouter
+	DataDicRouter
 	BaseRouter
 	FTPRouter
 }

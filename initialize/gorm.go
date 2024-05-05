@@ -33,8 +33,7 @@ func RegisterTables() {
 		system.SysAuthority{},
 		system.SysUserRole{},
 		system.SysRoleAuthority{},
-		system.SysBaseMenu{},
-		system.SysBaseMenuBtn{},
+		system.SysDataDic{},
 	)
 
 	if err != nil {

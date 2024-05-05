@@ -1,10 +1,12 @@
 package system
 
 type ServiceGroup struct {
+	*BaseService
 	*UserService
 	*RoleService
 	*AuthorityService
-	*BaseService
+	*AuthorizeService
+	*DataDicService
 	*FTPService
 	*CasbinService
 	*InitDBService
@@ -14,6 +16,8 @@ var ServiceGroupApp = ServiceGroup{
 	UserService:      UserServiceApp,
 	RoleService:      RoleServiceApp,
 	AuthorityService: AuthorityServiceApp,
+	AuthorizeService: AuthorizeServiceApp,
+	DataDicService:   DataDicServiceApp,
 	BaseService:      BaseServiceApp,
 	FTPService:       FTPServiceApp,
 	CasbinService:    CasbinServiceApp,

@@ -34,7 +34,7 @@ func (service *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 		p = sub, obj, act
 		
 		[role_definition]
-		g = _, _
+		g = _, _, _
 		
 		[policy_effect]
 		e = some(where (p.eft == allow))

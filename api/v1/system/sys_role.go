@@ -48,6 +48,23 @@ func (api *RoleApi) UpdateRole(c *gin.Context) {
 	response.OkWithDetailed(roleModel, message.OPER_OK, c)
 }
 
+func (api *RoleApi) UpdateRoleAuthorities(c *gin.Context) {
+	var data request.UpdateRoleAuthoritiesReq
+
+	if !ctx.MustBindWithCtx(c, &data) {
+		response.FailWithMessage(message.DATA_STRUCT_ERR, "", c)
+		return
+	}
+
+	msgCode, err := roleService.UpdateRoleAuthorities(data)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
+		return
+	}
+
+	response.OkWithData(msgCode, c)
+}
+
 func (api *RoleApi) DeleteRoleById(c *gin.Context) {
 	var data comReq.GetById
 
@@ -94,6 +111,23 @@ func (api *RoleApi) GetRoleByID(c *gin.Context) {
 	}
 
 	response.OkWithDetailed(role, msgCode, c)
+}
+
+func (api *RoleApi) GetRolesByUserID(c *gin.Context) {
+	var data comReq.GetById
+
+	if !ctx.MustBindWithCtx(c, &data) {
+		return
+	}
+
+	var roles []system.SysRole
+	msgCode, err := roleService.GetRolesByUserID(data.ID, &roles)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(roles, msgCode, c)
 }
 
 func (api *RoleApi) GetRolePagination(c *gin.Context) {

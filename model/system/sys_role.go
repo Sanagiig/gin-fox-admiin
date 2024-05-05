@@ -3,9 +3,11 @@ package system
 import "gin-one/model/common"
 
 type SysRole struct {
-	common.UUIDModel
-	RoleName    string         `json:"roleName" gorm:"role_name"`
-	Description string         `json:"description"`
+	common.UuidDateModel
+	common.StatusModel
+	Name        string         `json:"name" gorm:"name"`
+	Code        string         `json:"code" gorm:"code;unique_index;"`
+	Description string         `json:"description" gorm:"type:char(100);"`
 	Users       []SysUser      `json:"-" gorm:"many2many:sys_user_role;"`
 	Authorities []SysAuthority `json:"-" gorm:"many2many:sys_role_authority"`
 }

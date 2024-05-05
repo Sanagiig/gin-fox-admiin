@@ -1,6 +1,9 @@
 package request
 
-import "gin-one/model/common/request"
+import (
+	"gin-one/model/common"
+	"gin-one/model/common/request"
+)
 
 // Register User register structure
 type Register struct {
@@ -28,6 +31,7 @@ type CreateUser struct {
 }
 
 type GetUserReq struct {
+	common.StatusModel
 	Username string   `json:"username" form:"username"   example:"用户名"`
 	NickName string   `json:"nickname" form:"nickname"  example:"昵称"`
 	Enable   int      `json:"enable" form:"enable"  swaggertype:"string" example:"int 是否启用"`
@@ -41,15 +45,21 @@ type GetUserPaginationReq struct {
 	GetUserReq
 }
 
-type UpdateUserReq struct {
-	ID string `json:"id" example:"头像链接"`
-	GetUserReq
-}
-
 // User login structure
 type Login struct {
 	Username    string `json:"username"`    // 用户名
 	Password    string `json:"password"`    // 密码
 	CaptchaId   string `json:"captchaId"`   // 验证码ID
 	CaptchaCode string `json:"captchaCode"` // 验证码
+}
+
+type UpdateUserReq struct {
+	common.StatusModel
+	ID        string `json:"id" binding:"required" example:"id"`
+	HeaderImg string `json:"headerImg" example:"头像链接"`
+	Username  string `json:"username" form:"username"   example:"用户名"`
+	NickName  string `json:"nickname" form:"nickname"  example:"昵称"`
+	Enable    int    `json:"enable" form:"enable"  swaggertype:"string" example:"int 是否启用"`
+	Phone     string `json:"phone" form:"phone"   example:"电话号码"`
+	Email     string `json:"email" form:"email"   example:"电子邮箱"`
 }

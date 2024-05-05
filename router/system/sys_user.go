@@ -11,11 +11,11 @@ func (router *UserRouter) InitUserRouter(pubEngine *gin.RouterGroup, priEngine *
 	userApi := v1.ApiGroupApp.SystemApiGroup.UserApi
 	pub := pubEngine.Group("user")
 	{
-		pub.POST("/createUser", userApi.CreateUser)
 		pub.POST("/register", userApi.Register)
+		pub.POST("/createUser", userApi.CreateUser)
+		pub.PATCH("/updateUser", userApi.UpdateUser)
 		pub.DELETE("/deleteUserById", userApi.DeleteUserById)
 		pub.DELETE("/deleteUserList", userApi.DeleteUserList)
-		pub.DELETE("/updateUser", userApi.UpdateUser)
 		pub.GET("/getUser", userApi.GetUser)
 		pub.GET("/getUserById", userApi.GetUserByID)
 		pub.GET("/getUserPagination", userApi.GetUserPagination)
