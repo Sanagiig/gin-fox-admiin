@@ -64,18 +64,28 @@ func (u *UserApi) Login(c *gin.Context) {
 		return
 	}
 
+	clientIP := c.ClientIP()
+	code, ok, err := baseService.CheckCaptchaCode(clientIP, loginData.CaptchaId, loginData.CaptchaCode)
+	if err != nil {
+		response.FailWithMessage(message.CAPTCHA_ERR, err.Error(), c)
+		return
+	} else if !ok {
+		response.FailWithMessage(message.CAPTCHA_ERR, "", c)
+		return
+	}
+
 	code, user, err := userService.Login(loginData)
 	if err != nil {
 		response.FailWithMessage(code, err.Error(), c)
 		return
 	}
 
-	claims := jwt.DefaultJwtUtils.CreateClaims(request.BaseClaims{
+	claims := jwt.GetDefaultJWT().CreateClaims(request.BaseClaims{
 		ID:       user.ID,
 		Username: user.Username,
 		NickName: user.NickName,
 	})
-	token, err := jwt.DefaultJwtUtils.CreateToken(claims)
+	token, err := jwt.GetDefaultJWT().CreateToken(claims)
 	if err != nil {
 		response.FailWithMessage(message.LOGIN_ERR, err.Error(), c)
 		return
@@ -127,6 +137,17 @@ func (u *UserApi) UpdateUser(c *gin.Context) {
 	response.Ok(c)
 }
 
+func (u *UserApi) UpdateUserRoles(c *gin.Context) {
+	var data request.UpdateUserRolesReq
+
+	if !ctx.MustBindWithCtx(c, &data) {
+		return
+	}
+
+	msgCode, err := userService.UpdateUserRoles(data)
+	response.AllMsg(msgCode, err, c)
+}
+
 func (u *UserApi) DeleteUserById(c *gin.Context) {
 	var data comReq.GetById
 	err := c.ShouldBind(&data)
@@ -162,6 +183,17 @@ func (u *UserApi) DeleteUserList(c *gin.Context) {
 	response.OkWithMessage(code, c)
 }
 
+func (u *UserApi) GetSelf(c *gin.Context) {
+	userId := ctx.GetUserID(c)
+	msgCode, user, err := userService.GetUserByID(userId)
+	if err != nil {
+		response.FailWithMessage(msgCode, err.Error(), c)
+		return
+	}
+
+	response.OkWithDetailed(user, msgCode, c)
+}
+
 func (u *UserApi) GetUserByID(c *gin.Context) {
 	var data comReq.GetById
 
@@ -169,13 +201,13 @@ func (u *UserApi) GetUserByID(c *gin.Context) {
 		return
 	}
 
-	msgCode, role, err := userService.GetUserByID(data.ID)
+	msgCode, user, err := userService.GetUserByID(data.ID)
 	if err != nil {
 		response.FailWithMessage(msgCode, err.Error(), c)
 		return
 	}
 
-	response.OkWithDetailed(role, msgCode, c)
+	response.OkWithDetailed(user, msgCode, c)
 }
 
 func (u *UserApi) GetUser(c *gin.Context) {

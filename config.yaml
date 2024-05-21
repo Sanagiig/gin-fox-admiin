@@ -2,10 +2,10 @@
 
 # jwt configuration
 jwt:
-  signing-key: qmPlus
+  signing-key: lwj
   expires-time: 1d
   buffer-time: 1d
-  issuer: qmPlus
+  issuer: lwj
 # zap logger configuration
 zap:
   level: info

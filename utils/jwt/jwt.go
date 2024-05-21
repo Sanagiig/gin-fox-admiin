@@ -16,7 +16,7 @@ var (
 	TokenInvalid     = errors.New("Couldn't handle this token:")
 )
 
-var DefaultJwtUtils = NewJWT()
+var defaultJwtUtils *JWT
 
 type JWT struct {
 	SigningKey []byte
@@ -75,4 +75,11 @@ func NewJWT() *JWT {
 	return &JWT{
 		[]byte(global.Config.JWT.SigningKey),
 	}
+}
+
+func GetDefaultJWT() *JWT {
+	if defaultJwtUtils == nil {
+		defaultJwtUtils = NewJWT()
+	}
+	return defaultJwtUtils
 }

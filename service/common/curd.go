@@ -97,6 +97,40 @@ func GetModelByIds(model any, ids []string, res any) (codeMsg int, err error) {
 	return message.QUERY_OK, nil
 }
 
+// GetModelChildrenByParentIds
+//
+//	@Description: 递归查询所有子节点
+//	@param model
+//	@param ids
+//	@param res
+//	@return msgCode
+//	@return err
+func GetModelChildrenByParentIds(model any, ids []string, res *[]map[string]any, columns ...string) (msgCode int, err error) {
+	children := make([]map[string]any, 0, len(ids))
+	err = global.DB.Model(model).Select(columns).Where("parent_id in (?)", ids).Find(&children).Error
+	if err != nil {
+		return message.OPER_ERR, err
+	}
+
+	childrenIds := make([]string, 0, len(children))
+	for _, child := range children {
+		childrenIds = append(childrenIds, child["id"].(string))
+	}
+
+	// 递归查询子节点
+	if len(childrenIds) != 0 {
+		tmp := make([]map[string]any, 0, len(children))
+		msgCode, err = GetModelChildrenByParentIds(model, childrenIds, &tmp)
+		if err != nil {
+			return message.OPER_ERR, err
+		}
+		*res = append(*res, tmp...)
+	}
+
+	*res = append(*res, children...)
+	return message.OPER_OK, nil
+}
+
 func GetChildrenByParents(db *gorm.DB, parentIds []string, res any) (codeMsg int, err error) {
 	if parentIds != nil && len(parentIds) > 0 {
 		db = db.Where("parent_id in ?", parentIds)
@@ -109,10 +143,6 @@ func GetChildrenByParents(db *gorm.DB, parentIds []string, res any) (codeMsg int
 		return message.QUERY_ERR, err
 	}
 	return message.QUERY_OK, nil
-}
-
-func GetTreeList() {
-
 }
 
 func GetModelNameByIds(model any, ids []string) (codeMsg int, data []map[string]string, err error) {

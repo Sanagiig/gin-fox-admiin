@@ -109,6 +109,16 @@ func WrapPageData(pageInfo request.PageInfo, count int64, data interface{}) Page
 	}
 }
 
+func AllMsg(msgCode int, err error, c *gin.Context) {
+	if err != nil {
+		FailWithMessage(msgCode, err.Error(), c)
+	} else if !global.Msg.IsOkCode(msgCode) {
+		FailWithMessage(msgCode, "", c)
+	} else {
+		OkWithMessage(msgCode, c)
+	}
+}
+
 func NoAuth(message string, c *gin.Context) {
 	c.JSON(http.StatusUnauthorized, Response{
 		NO_AUTH,

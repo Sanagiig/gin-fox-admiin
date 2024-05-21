@@ -3,12 +3,13 @@ package request
 import "gin-one/model/common/request"
 
 type CreateAuthorityReq struct {
-	ParentID      string `json:"parentId"`
-	AuthorityName string `json:"authorityName" binding:"required"`
-	AuthorityType string `json:"authorityType" binding:"required"`
-	AuthorityVal  string `json:"authorityVal" binding:"required"`
-	Status        string `json:"status"`
-	Description   string `json:"description"`
+	ParentID         string `json:"parentId"`
+	AuthorityName    string `json:"authorityName" binding:"required"`
+	AuthorityType    string `json:"authorityType" binding:"required"`
+	AuthoritySubType string `json:"authoritySubType"`
+	AuthorityVal     string `json:"authorityVal" binding:"required"`
+	Status           string `json:"status"`
+	Description      string `json:"description"`
 }
 
 type UpdateAuthorityReq struct {

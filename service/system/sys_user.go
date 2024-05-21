@@ -18,6 +18,7 @@ type UserService struct{}
 
 func (service *UserService) Login(login request.Login) (code int, user system.SysUser, err error) {
 	user.Username = login.Username
+
 	err = global.DB.Preload("Roles").Where("username = ?", login.Username).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -68,13 +69,16 @@ func (service *UserService) CreateUser(u *system.SysUser) (msgCode int, err erro
 		err = copier.Copy(&userRolesData, &u.Roles)
 		return 0, err
 	}).Then(func() (int, error) {
-		codes := make([]string, 0, len(u.Roles))
+		updateUserRolesReq := request.UpdateUserRolesReq{
+			RoleIds: make([]string, 0, len(u.Roles)),
+		}
+
 		for _, role := range u.Roles {
-			codes = append(codes, role.Code)
+			updateUserRolesReq.RoleIds = append(updateUserRolesReq.RoleIds, role.ID)
 		}
 
 		userRolesData.ID = u.ID
-		return AuthorizeServiceApp.UpdateUserRoles(u.ID, codes)
+		return service.UpdateUserRoles(updateUserRolesReq)
 	}).Catch(func(e error) (isCatchContinue bool) {
 		tx.Rollback()
 		return false
@@ -86,6 +90,77 @@ func (service *UserService) CreateUser(u *system.SysUser) (msgCode int, err erro
 
 func (service *UserService) UpdateUser(u *system.SysUser) (err error) {
 	return global.DB.Model(u).Updates(u).Error
+}
+
+func (service *UserService) AddUserRoles(req request.UpdateUserRolesReq) (msgCode int, err error) {
+	roleCodes := make([]map[string]string, 0, len(req.RoleIds))
+
+	msgCode, err = RoleServiceApp.GetCodeByIds(req.RoleIds, &roleCodes)
+	if err != nil {
+		return message.OPER_ERR, err
+	} else if len(roleCodes) != len(req.RoleIds) {
+		return message.SOME_ROLES_NOT_EXIST, nil
+	}
+
+	u := system.SysUser{}
+	u.ID = req.ID
+	roles := make([]system.SysRole, 0, len(req.RoleIds))
+	for _, roleId := range req.RoleIds {
+		r := system.SysRole{}
+		r.ID = roleId
+		roles = append(roles, r)
+	}
+
+	tx := global.DB.Model(&u).Begin()
+	err = tx.Association("Roles").Append(roles)
+	if err != nil {
+		return message.OPER_ERR, err
+	}
+
+	codes := make([]string, 0, len(req.RoleIds))
+	for _, role := range roleCodes {
+		codes = append(codes, role["code"])
+	}
+
+	msgCode, err = AuthorizeServiceApp.AddUserRoles(req.ID, codes)
+	if err != nil {
+		tx.Rollback()
+		return message.OPER_ERR, err
+	}
+	tx.Commit()
+	return message.OPER_OK, nil
+}
+
+func (service *UserService) UpdateUserRoles(req request.UpdateUserRolesReq) (msgCode int, err error) {
+	u := system.SysUser{}
+	roles := make([]system.SysRole, 0, len(req.RoleIds))
+
+	for _, roleId := range req.RoleIds {
+		r := system.SysRole{}
+		r.ID = roleId
+		roles = append(roles, r)
+	}
+
+	u.ID = req.ID
+	tx := global.DB.Model(&u).Begin()
+	err = tx.Association("Roles").Clear()
+	if err != nil {
+		return message.OPER_DB_ERR, err
+	}
+
+	err = tx.Association("Roles").Append(roles)
+	if err != nil {
+		tx.Rollback()
+		return message.OPER_DB_ERR, err
+	}
+
+	msgCode, err = AuthorizeServiceApp.UpdateUserRolesByIds(req)
+	if err != nil {
+		tx.Rollback()
+	}
+
+	tx.Commit()
+	return
 }
 
 func (service *UserService) DeleteUserById(id string) (int, error) {

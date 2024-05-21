@@ -8,14 +8,14 @@ import (
 type AuthorizeRouter struct {
 }
 
-func (r *AuthorityRouter) InitAuthorizeRouter(pubEngine *gin.RouterGroup, priEngine *gin.RouterGroup) {
+func (r *AuthorizeRouter) InitAuthorizeRouter(pubEngine *gin.RouterGroup, priEngine *gin.RouterGroup) {
 	AuthorizeApi := v1.ApiGroupApp.SystemApiGroup.AuthorizeApi
-	pub := pubEngine.Group("authority")
+	pub := pubEngine.Group("authorize")
 	{
 
 	}
 
-	pri := pubEngine.Group("authority")
+	pri := pubEngine.Group("authorize")
 	{
 		pri.PATCH("/updateUserRoles", AuthorizeApi.UpdateUserRoles)
 		pri.PATCH("/updateRoleAuthorities", AuthorizeApi.UpdateRoleAuthorities)

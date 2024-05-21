@@ -34,7 +34,7 @@ func (service *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 		p = sub, obj, act
 		
 		[role_definition]
-		g = _, _, _
+		g = _, _
 		
 		[policy_effect]
 		e = some(where (p.eft == allow))
@@ -47,7 +47,11 @@ func (service *CasbinService) Casbin() *casbin.SyncedCachedEnforcer {
 			zap.L().Error("字符串加载模型失败!", zap.Error(err))
 			return
 		}
-		syncedCachedEnforcer, _ = casbin.NewSyncedCachedEnforcer(m, a)
+		syncedCachedEnforcer, err = casbin.NewSyncedCachedEnforcer(m, a)
+		if err != nil {
+			zap.L().Error("创建Casbin 失败!", zap.Error(err))
+			panic(err)
+		}
 		syncedCachedEnforcer.SetExpireTime(60 * 60)
 		err = syncedCachedEnforcer.LoadPolicy()
 		if err != nil {

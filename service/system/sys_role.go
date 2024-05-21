@@ -58,7 +58,8 @@ func (service *RoleService) GetRoleByIds(ids []string) (codeMsg int, roles []sys
 }
 
 func (service *RoleService) GetCodeByIds(ids []string, res any) (codeMsg int, err error) {
-	err = global.DB.Model(&system.SysRole{}).Select("id", "code").Where("id in (?)", ids).Find(res).Error
+	err = global.DB.Model(&system.SysRole{}).Select("id", "code").
+		Where("id in (?)", ids).Find(res).Error
 	if err != nil {
 		return message.QUERY_ERR, err
 	}

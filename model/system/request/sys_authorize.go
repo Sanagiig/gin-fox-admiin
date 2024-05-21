@@ -5,11 +5,6 @@ type AuthorizeData struct {
 	Code string `json:"code" binding:"required" example:"code"`
 }
 
-type UpdateUserRolesReq struct {
-	ID    string   `json:"id" binding:"required" example:"id"`
-	Roles []string `json:"roles" binding:"required" example:"role"`
-}
-
 type UpdateUserRolesData struct {
 	ID    string              `json:"id" binding:"required" example:"id"`
 	Roles []map[string]string `json:"roles" binding:"required" example:"role"`

@@ -35,11 +35,31 @@ func (service *AuthorityService) UpdateAuthority(authority *system.SysAuthority)
 }
 
 func (service *AuthorityService) DeleteAuthorityByID(id string) (int, error) {
-	return common.DeleteModelByID(&system.SysAuthority{}, id)
+	return service.DeleteAuthorityList([]string{id})
 }
 
-func (service *AuthorityService) DeleteAuthorityList(ids []string) (int, error) {
-	return common.DeleteModelList(&system.SysAuthority{}, ids)
+func (service *AuthorityService) DeleteAuthorityList(ids []string) (msgCode int, err error) {
+	childrenIds := make([]string, 0, len(ids))
+	msgCode, err = service.GetChildrenIdsByParentIds(ids, &childrenIds)
+	if err != nil {
+		return
+	}
+
+	childrenIds = append(childrenIds, ids...)
+	return common.DeleteModelList(&system.SysAuthority{}, childrenIds)
+}
+
+func (service *AuthorityService) GetChildrenIdsByParentIds(ids []string, res *[]string) (msgCode int, err error) {
+	children := make([]map[string]any, 0)
+	msgCode, err = common.GetModelChildrenByParentIds(&system.SysAuthority{}, ids, &children, "id")
+	if err != nil {
+		return msgCode, err
+	}
+
+	for _, child := range children {
+		*res = append(*res, child["id"].(string))
+	}
+	return
 }
 
 func (service *AuthorityService) GetAuthorityByID(id string) (msgCode int, auth system.SysAuthority, err error) {

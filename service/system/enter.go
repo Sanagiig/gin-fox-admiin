@@ -6,6 +6,7 @@ type ServiceGroup struct {
 	*RoleService
 	*AuthorityService
 	*AuthorizeService
+	*JWTService
 	*DataDicService
 	*FTPService
 	*CasbinService
@@ -17,6 +18,7 @@ var ServiceGroupApp = ServiceGroup{
 	RoleService:      RoleServiceApp,
 	AuthorityService: AuthorityServiceApp,
 	AuthorizeService: AuthorizeServiceApp,
+	JWTService:       JWTServiceApp,
 	DataDicService:   DataDicServiceApp,
 	BaseService:      BaseServiceApp,
 	FTPService:       FTPServiceApp,

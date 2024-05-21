@@ -19,6 +19,17 @@ const (
 	PASSWORD_NOT_INCONSISTENT //  密码不一致
 	LOGIN_SUCCESS             // 登录失败
 	LOGIN_ERR                 // 登录失败
+
+	// 角色
+	ROLE_NOT_EXIST       // 角色不存在
+	SOME_ROLES_NOT_EXIST // 部分角色不存在
+
+	// 权限
+	AUTH_NOT_EXIST      // 权限不存在
+	SOME_AUTH_NOT_EXIST // 部分权限不存在
+	AUTH_FAILED
+	TOKEN_IS_BLOCK   // TOKEN 被禁用
+	TOKEN_IS_EXPIRED //TOKEN 已过期,
 	// 请求相关
 	REQ_DATA_ERR               // 请求数据错误
 	OPER_DB_ERR                // 操作数据错误

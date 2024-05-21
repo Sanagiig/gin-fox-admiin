@@ -63,3 +63,8 @@ type UpdateUserReq struct {
 	Phone     string `json:"phone" form:"phone"   example:"电话号码"`
 	Email     string `json:"email" form:"email"   example:"电子邮箱"`
 }
+
+type UpdateUserRolesReq struct {
+	ID      string   `json:"id" binding:"required" example:"id"`
+	RoleIds []string `json:"roleIds" binding:"required" example:"[]"`
+}
